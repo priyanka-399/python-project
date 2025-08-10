@@ -1,0 +1,42 @@
+import requests
+from bs4 import BeautifulSoup
+
+# Function to scrape news headlines
+def scrape_headlines(url):
+    # Set headers to mimic a browser visit
+    headers = {
+        'User -Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+    # Send a GET request to the website
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an error for bad responses
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching the URL: {e}")
+        return
+
+    # Parse the HTML content
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # Find all <h2> tags (or adjust to the specific tag used for headlines)
+    headlines = soup.find_all('h2')  # Change this if necessary
+
+    # Check if any headlines were found
+    if not headlines:
+        print("No headlines found. Please check the HTML structure of the page.")
+        return
+
+    # Extract text from each headline and store in a list
+    headlines_list = [headline.text.strip() for headline in headlines]
+
+    # Save headlines to a .txt file
+    with open('headlines.txt', 'w') as file:
+        for headline in headlines_list:
+            file.write(headline + '\n')
+
+    print("Headlines have been saved to headlines.txt")
+
+# URL of the news website (replace with the actual URL you want to scrape)
+news_url = 'https://example.com/news'  # Change this to the actual news website
+scrape_headlines(news_url)
